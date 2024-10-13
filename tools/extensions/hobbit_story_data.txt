@@ -1,0 +1,7 @@
+{
+    "What was Blondie's last UK No 1 of the 80s?": "Blondie\u2019s UK Number 1s include Heart Of Glass, Sunday Girl, Atomic, Call Me, Tide Is High and Maria earned them a chart-topping renaissance in 1999. Blondie also enjoyed two Number 1 albums ...",
+    "In which decade of the 20th century was Anne Bancroft born?": "Anne Bancroft was born on September 17, 1931 in The Bronx, NY, and died on June 6, 2005 in Manhattan, NY. She was an Oscar-winning actress who starred in The Miracle Worker, The Graduate, The Elephant Man and many other films.",
+    "Which rock star did Cindy Crawford name her first son after?": "Photo: Modeling runs in the family for Cindy Crawford and her husband, Rande Gerber. The couple, who married in May 1998, share two children: son Presley Gerber and daughter Kaia Gerber. Now ...",
+    "Who designed the dress which made the most at Diana's dress auction?": "A dress worn by Diana, the Princess of Wales, and made by her favourite designer Jacques Azagury has set a new record after it was auctioned for over $1.1m. The Morocco-born British designer\u2019s ...",
+    "Which Palestinian co-founded al Fatah in 1957?": "The name Fatah, the Arabic acronym in reverse for Harakat al-tahrir al-watani al-Filastini (The Palestinian National Liberation Movement), came to attention in the first issue of the magazine Filastinuna\u2013nida\u2019 al-hayat (Our Palestine\u2013The Call of Life), in Beirut in October 1959, and cells of the group began to be formed in the Gaza Strip ..."
+}

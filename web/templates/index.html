@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MetaAgent Demo</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        /* Add scrollbar styles */
+        #run-log, #test-cases {
+            max-height: 300px;
+            overflow-y: scroll;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>MetaAgent Demo</h1>
+
+    <div class="container">
+        <!-- Construction Stage -->
+        <section>
+            <h2>Construction Stage</h2>
+            <form id="design-form">
+                <label for="task_description">Enter Task Description</label><br>
+                <textarea id="task_description" name="task_description" rows="4" cols="50" required></textarea><br><br>
+                <button type="submit">Design Multi-Agent System</button>
+                <span class="loading-spinner" id="design-spinner"></span>
+            </form>
+            <div id="design-response"></div>
+        </section>
+
+        <!-- Generate Test Cases Stage -->
+        <section>
+            <h2>Generate Test Cases</h2>
+            <button id="generate-cases-button">Generate Test Cases</button>
+            <span class="loading-spinner" id="cases-spinner"></span>
+            <div id="cases-response"></div>
+            <h3>Test Cases</h3>
+            <pre id="test-cases"></pre>
+        </section>
+
+        <!-- Evolution Stage -->
+        <section>
+            <h2>Evolution Stage</h2>
+            <button id="evolve-button">Start Evolution</button>
+            <span class="loading-spinner" id="evolve-spinner"></span>
+            <div id="evolve-response"></div>
+        </section>
+
+        <!-- FSM Visualization -->
+        <section>
+            <h2>Multi-Agent System Visualization</h2>
+            <div id="fsm-graph" style="width: 100%; height: 500px;"></div>
+        </section>
+
+        <!-- Deployment Stage -->
+        <section>
+            <h2>Deployment Stage</h2>
+            <form id="deploy-form">
+                <label for="case_input">Enter Case</label><br>
+                <textarea id="case_input" name="case_input" rows="4" cols="50" required></textarea><br><br>
+                <button type="submit">Run Test</button>
+                <span class="loading-spinner" id="deploy-spinner"></span>
+            </form>
+            <div id="deploy-response"></div>
+        </section>
+
+        <!-- Running Log -->
+        <section>
+            <h2>Running Log</h2>
+            <pre id="run-log"></pre>
+        </section>
+    </div>
+
+    <script src="/static/js/interactive_graph.js"></script>
+
+    <script>
+        // Function to fetch and update the log
+        function updateLog() {
+            $.getJSON('/get_log', function(data) {
+                if (data.log) {
+                    $('#run-log').text(data.log);
+                    // Auto-scroll to the bottom
+                    var logElement = document.getElementById('run-log');
+                    logElement.scrollTop = logElement.scrollHeight;
+                }
+            });
+        }
+
+        // Refresh the log every 5 seconds
+        setInterval(updateLog, 5000);
+
+        // Fetch the log immediately after the page loads
+        $(document).ready(function() {
+            updateLog();
+        });
+
+        // Start real-time log update when the "Start Evolution" button is clicked
+        $('#evolve-button').click(function() {
+            // Clear previous log
+            $('#run-log').text('');
+            // Send evolution request
+            $.post('/evolve', function(response) {
+                if (response.status === 'success') {
+                    alert(response.message);
+                } else {
+                    alert('Evolution failed to start: ' + response.message);
+                }
+            });
+        });
+
+        // Handle the design form submission
+        $('#design-form').submit(function(event) {
+            event.preventDefault();
+            $('#design-spinner').show();
+            $.post('/design', $(this).serialize(), function(data) {
+                $('#design-spinner').hide();
+                if (data.status === 'success') {
+                    $('#design-response').text(data.message + ' Token Cost: ' + data.token_cost);
+                } else {
+                    $('#design-response').text('Error: ' + data.message);
+                }
+            });
+        });
+
+        // Handle the deploy form submission
+        $('#deploy-form').submit(function(event) {
+            event.preventDefault();
+            $('#deploy-spinner').show();
+            $.post('/deploy', $(this).serialize(), function(data) {
+                $('#deploy-spinner').hide();
+                if (data.status === 'success') {
+                    $('#deploy-response').text(data.message);
+                } else {
+                    $('#deploy-response').text('Error: ' + data.message);
+                }
+            });
+        });
+
+        // Handle the generate test cases button
+        $('#generate-cases-button').click(function() {
+            $('#cases-spinner').show();
+            $.get('/generate_cases', function(data) {
+                $('#cases-spinner').hide();
+                if (data.status === 'success') {
+                    $('#test-cases').text(data.cases.join('\n'));
+                    $('#cases-response').text('Test cases generated successfully.');
+                } else {
+                    $('#cases-response').text('Error: ' + data.message);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+
+### For OpenAI
+#OPENAI_API_KEY: sk-proj-Qb3arpbATMAXg1GF8iR0T3BlbkFJtoOdAQ2VyiCh7ugfchIE
+#OPENAI_API_BASE: https://api.openai-proxy.org/v1
+
+### For Azure OpenAI
+API_VERSION: 2024-07-01-preview
+AZURE_OPENAI_API_KEY: d56bd868ff56401595c6e74357c02f04
+AZURE_OPENAI_API_BASE: https://yaolun-west.openai.azure.com/  
+
+
+### For VLLM
+#OPENAI_API_BASE: http://localhost:8000/v1
+#OPENAI_API_KEY: 1234
+

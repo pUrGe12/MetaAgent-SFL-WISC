@@ -1,0 +1,3 @@
+City: Test City
+Temperature: 293.15
+Description: clear sky

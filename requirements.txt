@@ -1,0 +1,7 @@
+networkx
+matplotlib
+pydantic
+PyYAML
+wikipedia
+mediawikiapi
+wikibase-rest-api-client
