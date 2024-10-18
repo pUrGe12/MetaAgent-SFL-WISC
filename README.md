@@ -59,13 +59,7 @@ Join our [Discord](https://discord.gg/94a6x2f7) to discuss with us.
 📮 Email: zhangyaolun5@gmail.com  
 
 
-## Cookbook  
-After the automatic generation of the multi-agent system, you can edit the system by your self.  
-- Customize tools for agents.  
-- Customize the states for agents.  
-- Customize the transitions for agents.  
 
-By adjusting the JSON file.  
 
 ## 📄 Citation  
 Paper coming soon.
