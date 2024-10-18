@@ -40,7 +40,16 @@ pip install -r requirements.txt
 ```
 
 ### Run
-Todo: Need a command line .py file to run the whole system.
+- In the code base:  
+```bash
+cd autodesign
+bash run.sh
+```  
+- In the interface:  
+```bash
+cd web
+python app.py
+```
 
 ## 🤝 Support  
 ### Discord Join Us  
