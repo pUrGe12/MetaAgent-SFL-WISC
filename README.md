@@ -30,7 +30,7 @@ The finite state machine has several features:
 
 ## 📹 Demo Video  
 
-![video](https://github.com/user-attachments/assets/816efd29-ed93-4a4d-a6d4-d27e1282a622)
+<video src="https://github.com/Mercury7353/MetaAgent/assets/73fde677-fad0-4109-b18a-15f26fdcb42e"> </video> 
 
 ## 🚀 Quick Start    
 ### Install
