@@ -10,6 +10,7 @@
 ## 👀 Overview  
 ![image](compare.png)
 MetaAgent is a framework that can be used to build your own multi-agent system  automatically by **one line of prompt**.  
+The Open-Sourced framework 
 
 The Multi-Agent System (MAS) is based on the Finite State Machine (FSM), which is shown in the figure.  
 
@@ -56,5 +57,16 @@ python app.py
 Join our [Discord](https://discord.gg/94a6x2f7) to discuss with us.  
 ### Contact Us  
 📮 Email: zhangyaolun5@gmail.com  
+
+
+## Cookbook  
+After the automatic generation of the multi-agent system, you can edit the system by your self.  
+- Customize tools for agents.  
+- Customize the states for agents.  
+- Customize the transitions for agents.  
+
+By adjusting the JSON file.  
+
 ## 📄 Citation  
 Paper coming soon.
+
