@@ -12,44 +12,13 @@ import networkx as nx
 from MultiAgent import MultiAgentSystem
 from prompts import *
 import os
+import logging
 #os.environ["OPENAI_API_KEY"]="sk-JN3JpGrAFt82do4UT7I64uD6BFCIs6Yp0NQywaYPdGCyJABk"
 #os.environ["OPENAI_API_KEY"]="sk-proj-Qb3arpbATMAXg1GF8iR0T3BlbkFJtoOdAQ2VyiCh7ugfchIE"
 #os.environ["OPENAI_API_BASE"]="https://api.openai-proxy.org/v1"
-os.environ["AZURE_OPENAI_API_KEY"] = "d56bd868ff56401595c6e74357c02f04"
-os.environ["AZURE_OPENAI_API_BASE"] = "https://yaolun-west.openai.azure.com/"
-os.environ["OPENAI_API_VERSION"] = "2024-07-01-preview"
-
-
-
-def Generate_Role_Description(task):
-    prompt_template='''You are the designer of an multi-agent system. Given a general task description, you need generate several roles that could act cooperatively to solve the task. 
-    Make sure the role is actually necessary. There is no need to define a role for too trivial functions.
-    Before your answer, you should first think step by step to think what role you will design and verify whether the role is necessary.
-    You answer should obey the following format:
-    Reasoning:<Your reasoning process>
-    Answer:
-    ```json
-    [{"name":<fill in role0 name>,"description":<fill in role0 description>},
-    {"name":<fill in role1 name>,"description":<fill in role1 description>},
-    ...]
-    ```
-    Here are some requirements:
-    1. There must be an agent who give formal response to the user question, with the <|submit|> token.
-        Example:
-        User: Calculate 1+10
-        ...
-        The final output agent: <|submit|>The answer is 11
-
-    4. There must be a agent submit the final answer (use the pattern: \n <|submit|>: <fill in the final answer> \n),clarify this in Instruction
-
-    '''
-    role_generator=LLM(prompt_template)
-    roles=role_generator.chat(message=f"The task is: {task}\n, now generate the role")
-    #print(roles)
-    role_json=roles.split("```")[-2].replace("json","")
-    role_dict=json.loads(role_json)
-    #print(role_dict)
-    return role_dict,role_generator
+#os.environ["AZURE_OPENAI_API_KEY"] = "d56bd868ff56401595c6e74357c02f04"
+#os.environ["AZURE_OPENAI_API_BASE"] = "https://yaolun-west.openai.azure.com/"
+#os.environ["OPENAI_API_VERSION"] = "2024-07-01-preview"
 
     
 
@@ -70,13 +39,12 @@ def Generate_Agent_Description(task,tools):
     ...]
     ```
 
-    WARNING: The Agent you design should be autonomous agents, which can not ask humanfeedback or wait for human answer!
     You can't design too many redundant agents. More Agents means more cost!  Agents need to cooperate efficiently
     '''
 
     
     agent_generator=LLM(prompt_template)
-    agents=agent_generator.chat(message=f"The General Task is {task} and the tools you can select are {tools}. One agent can equipped with various tools and it can also act without tools. Not every tool is necessary for the task! \n Now design several agents that could act cooperatively to solve these kind of task. Obey the format strictly!")
+    agents=agent_generator.chat(message=f"The General Task is {task} and the tools you can select are {tools}. One agent can equipped with various tools and it can also act without tools. Not every tool is necessary for the task! ")
     
     agent_json=agents.split("```")[-2].replace("json","")
     #print(agents)
@@ -261,8 +229,12 @@ def validate_fsm(fsm, agent_dict):
 # Update the gen function to use Generate_FSM instead of Generate_DAG
 def gen(task,mas_saving_path):
     #role_dict, llm_1 = Generate_Role_Description(task)
+    print("Generateing Agent Description")
     agent_dict, llm_2 = Generate_Agent_Description(task=task, tools=tool_list)
-    fsm, llm_3 = Generate_FSM(task=task, agent_dict=agent_dict)
+    logging.info(f"Generate_Agent_Description: {agent_dict}")  
+    fsm, llm_3 = Generate_FSM(task=task, agent_dict=agent_dict)  
+    print("Generateing FSM")
+    logging.info(f"Generate_FSM: {fsm}")
     #print(agent_dict)
     #print(fsm)
     

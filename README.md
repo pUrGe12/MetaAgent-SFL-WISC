@@ -1,13 +1,36 @@
 # MetaAgent: Building your Multi-Agent System by one line of prompt
 
+<p align="center">
+  <img src="face.png" alt="image" width="250"/>
+</p>
 
 ## 🎆 News
-- [2024/10/11] Release the first version of MetaAgent.
+- [2024/10/17] Release the first version of MetaAgent.
 
 ## 👀 Overview  
+![image](compare.png)
 MetaAgent is a framework that can be used to build your own multi-agent system  automatically by **one line of prompt**.  
 
+The Multi-Agent System (MAS) is based on the Finite State Machine (FSM), which is shown in the figure.  
+
+### Auto-generation of Multi-Agent System  
+- Given a general task description(eg. Build a multi-agent system for software development), MetaAgent can automatically generate a multi-agent system with several agents.  
+- Unlike other auto-generation framework, MetaAgent can generate a multi-agent system without external training data.  
+- The generated multi-agent system is also able to solve every cases of the given task domain.   
+
+
+### Why Finite State Machine?
+![image](FSM.png)
+The finite state machine has several features:   
+
+🔧 **Tool Enabled**: The agent can use tools to help it complete tasks.  
+🔄 **State Traceback**: The agent can traceback the state of the system when the task fails.   
+
+
+
 ## 📹 Demo Video  
+
+![video](https://github.com/user-attachments/assets/816efd29-ed93-4a4d-a6d4-d27e1282a622)
 
 ## 🚀 Quick Start    
 ### Install
@@ -21,7 +44,7 @@ Todo: Need a command line .py file to run the whole system.
 
 ## 🤝 Support  
 ### Discord Join Us  
-Join our [Discord](https://discord.gg/metaagent) to discuss with us.  
+Join our [Discord](https://discord.gg/94a6x2f7) to discuss with us.  
 ### Contact Us  
 📮 Email: zhangyaolun5@gmail.com  
 ## 📄 Citation  
