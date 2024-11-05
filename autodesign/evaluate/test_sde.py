@@ -1,6 +1,6 @@
 import sys
 sys.path.append("..")
-sys.path.append("/data/yiwei_zhang/safeagent/MetaAgentBenchmark")
+#sys.path.append("/data/yiwei_zhang/safeagent/MetaAgentBenchmark")
 #from EVALPLUS.run_mas import run
 from mlbench.prompts import *
 from MultiAgent import MultiAgentSystem

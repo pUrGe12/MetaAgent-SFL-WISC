@@ -1,0 +1,3 @@
+"\nTrain a Random Forest model to predict survival on the Titanic dataset located at /Users/a11/Desktop/MetaAgent/MetaAgent/ml_benchmark/04_titanic/split_train.csv. Report the F-1 score and accuracy on the test dataset.\n"
+"\nTrain a Linear Regression model to predict house prices using a dataset located at /Users/a11/Desktop/MetaAgent/MetaAgent/ml_benchmark/05_housing/split_train.csv. Report the RMSE and R-squared metrics on the test dataset.\n"
+"\nTrain a K-Nearest Neighbors (KNN) model to classify handwritten digits using the MNIST dataset located at /Users/a11/Desktop/MetaAgent/MetaAgent/ml_benchmark/06_mnist/split_train.csv. Report the precision, recall, and F-1 score on the test dataset.\n"

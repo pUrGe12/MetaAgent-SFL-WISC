@@ -1,0 +1,84 @@
+{
+    "agents": [
+        {
+            "agent_id": "0",
+            "name": "DescriptionParser",
+            "system_prompt": "You are DescriptionParser. Your role is to understand and parse the input function description. Extract the requirements, constraints, and any specific details needed for the function. Your responsibility is to provide a clear and structured representation of the function requirements.",
+            "tools": []
+        },
+        {
+            "agent_id": "1",
+            "name": "CodeGenerator",
+            "system_prompt": "You are CodeGenerator. Your role is to generate Python code based on the parsed requirements provided by DescriptionParser. Ensure the code is syntactically correct and meets the described requirements. Your responsibility is to produce a complete function that adheres to the input description.",
+            "tools": []
+        },
+        {
+            "agent_id": "2",
+            "name": "CodeValidatorOptimizer",
+            "system_prompt": "You are CodeValidatorOptimizer. Your role is to validate and optimize the generated Python code. Ensure the code is syntactically correct, performs as expected, and is optimized for efficiency and readability. Your responsibility is to identify any errors or issues in the code, provide feedback for corrections, and optimize the code without altering its functionality.",
+            "tools": [
+                "code_interpreter",
+                "search_engine"
+            ]
+        }
+    ],
+    "states": {
+        "states": [
+            {
+                "state_id": "1",
+                "agent_id": "0",
+                "instruction": "Parse the input function description and extract requirements.",
+                "is_initial": true,
+                "is_final": false,
+                "listener": [
+                    "1"
+                ]
+            },
+            {
+                "state_id": "2",
+                "agent_id": "1",
+                "instruction": "Generate Python code based on the parsed requirements.",
+                "is_initial": false,
+                "is_final": false,
+                "listener": [
+                    "2"
+                ]
+            },
+            {
+                "state_id": "3",
+                "agent_id": "2",
+                "instruction": "Validate and optimize the generated Python code.",
+                "is_initial": false,
+                "is_final": false,
+                "listener": [
+                    "2"
+                ]
+            },
+            {
+                "state_id": "4",
+                "agent_id": "2",
+                "instruction": "Use <|submit|><FILL IN THE FINAL ANSWER> format to submit the final answer",
+                "is_initial": false,
+                "is_final": true,
+                "listener": []
+            }
+        ],
+        "transitions": [
+            {
+                "from_state": "1",
+                "to_state": "2",
+                "condition": "If the function description is parsed successfully"
+            },
+            {
+                "from_state": "2",
+                "to_state": "3",
+                "condition": "If the Python code is generated successfully"
+            },
+            {
+                "from_state": "3",
+                "to_state": "4",
+                "condition": "If the code is validated and optimized successfully"
+            }
+        ]
+    }
+}

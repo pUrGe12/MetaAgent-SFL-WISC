@@ -1,1 +1,83 @@
-{"agents": [{"agent_id": "0", "name": "RequirementsAnalyzer", "system_prompt": "You are RequirementsAnalyzer. Your role is to gather and analyze software requirements. You need to ensure that all necessary requirements are captured accurately and comprehensively.", "tools": ["search_engine"]}, {"agent_id": "1", "name": "SoftwareDesigner", "system_prompt": "You are SoftwareDesigner. Your role is to design the software architecture based on the gathered requirements. You need to create a clear and efficient design that can be easily implemented.", "tools": []}, {"agent_id": "2", "name": "CodeWriter", "system_prompt": "You are CodeWriter. Your role is to write the code for the software based on the design provided. You need to ensure that the code is clean, efficient, and follows best practices.", "tools": ["code_interpreter"]}, {"agent_id": "3", "name": "SoftwareTester", "system_prompt": "You are SoftwareTester. Your role is to test the software to ensure it functions correctly and is free of bugs. You need to perform thorough testing and report any issues found.", "tools": ["code_interpreter"]}, {"agent_id": "4", "name": "DocumentationWriter", "system_prompt": "You are DocumentationWriter. Your role is to document the software, including writing a README file for the user. You need to ensure that the documentation is clear, comprehensive, and easy to understand.", "tools": []}, {"agent_id": "5", "name": "FileSaver", "system_prompt": "You are FileSaver. Your role is to save the developed software to the local file system. You need to ensure that all files are saved correctly and are easily accessible.", "tools": []}], "states": {"states": [{"state_id": "1", "agent_id": "0", "instruction": "Gather and analyze software requirements", "is_initial": true, "is_final": false, "listener": ["1"]}, {"state_id": "2", "agent_id": "1", "instruction": "Design the software architecture based on the gathered requirements", "is_initial": false, "is_final": false, "listener": ["2"]}, {"state_id": "3", "agent_id": "2", "instruction": "Write the code for the software based on the design provided", "is_initial": false, "is_final": false, "listener": ["3"]}, {"state_id": "4", "agent_id": "3", "instruction": "Test the software to ensure it functions correctly and is free of bugs", "is_initial": false, "is_final": false, "listener": ["2"]}, {"state_id": "5", "agent_id": "4", "instruction": "Document the software, including writing a README file for the user", "is_initial": false, "is_final": false, "listener": ["5"]}, {"state_id": "6", "agent_id": "5", "instruction": "Save the developed software to the local file system", "is_initial": false, "is_final": false, "listener": ["4"]}, {"state_id": "7", "agent_id": "5", "instruction": "<|submit|>", "is_initial": false, "is_final": true, "listener": []}], "transitions": [{"from_state": "1", "to_state": "2", "condition": "If requirements are gathered and analyzed successfully"}, {"from_state": "2", "to_state": "3", "condition": "If the software design is completed successfully"}, {"from_state": "3", "to_state": "4", "condition": "If the code is written successfully"}, {"from_state": "4", "to_state": "5", "condition": "If the software passes all tests"}, {"from_state": "5", "to_state": "6", "condition": "If the documentation is completed successfully"}, {"from_state": "6", "to_state": "7", "condition": "If the software is saved successfully"}, {"from_state": "4", "to_state": "3", "condition": "If bugs are found and need to be fixed"}, {"from_state": "3", "to_state": "2", "condition": "If the code needs to be re-written based on design changes"}, {"from_state": "2", "to_state": "1", "condition": "If the design needs to be changed based on new requirements"}]}}
+{
+    "agents": [
+        {
+            "agent_id": "0",
+            "name": "DataProcessor",
+            "system_prompt": "Responsible for processing the given dataset for training and testing the machine learning model. It preprocesses the data, handles feature engineering, and prepares the data for model training and evaluation.",
+            "tools": [
+                "code_interpreter"
+            ]
+        },
+        {
+            "agent_id": "1",
+            "name": "ModelTrainer",
+            "system_prompt": "Responsible for training the machine learning model on the processed dataset. It selects the appropriate algorithm, tunes hyperparameters, and fits the model to the training data.",
+            "tools": []
+        },
+        {
+            "agent_id": "2",
+            "name": "Evaluator",
+            "system_prompt": "Responsible for evaluating the trained model on the test dataset and reporting the expected metrics (e.g., F-1 score, RMSE) to the user. It assesses the model's performance and provides insights on its effectiveness.",
+            "tools": [
+                "search_engine"
+            ]
+        }
+    ],
+    "states": {
+        "states": [
+            {
+                "state_id": "1",
+                "agent_id": "0",
+                "instruction": "Process the given dataset for training and testing the machine learning model. Perform data preprocessing and feature engineering.",
+                "is_initial": true,
+                "is_final": false,
+                "listener": [
+                    "1"
+                ]
+            },
+            {
+                "state_id": "2",
+                "agent_id": "1",
+                "instruction": "Train the machine learning model on the processed dataset. Select algorithm, tune hyperparameters, and fit the model to the training data.",
+                "is_initial": false,
+                "is_final": false,
+                "listener": [
+                    "2"
+                ]
+            },
+            {
+                "state_id": "3",
+                "agent_id": "2",
+                "instruction": "Evaluate the trained model on the test dataset. Report expected metrics (e.g., F-1 score, RMSE) to the user.",
+                "is_initial": false,
+                "is_final": false,
+                "listener": []
+            },
+            {
+                "state_id": "4",
+                "agent_id": "2",
+                "instruction": "Submit the final metrics to the user.",
+                "is_initial": false,
+                "is_final": true,
+                "listener": []
+            }
+        ],
+        "transitions": [
+            {
+                "from_state": "1",
+                "to_state": "2",
+                "condition": "If dataset processing is completed successfully"
+            },
+            {
+                "from_state": "2",
+                "to_state": "3",
+                "condition": "If model training is successful"
+            },
+            {
+                "from_state": "3",
+                "to_state": "4",
+                "condition": "If model evaluation is completed and metrics are ready to report"
+            }
+        ]
+    }
+}

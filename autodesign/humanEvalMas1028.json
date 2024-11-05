@@ -1,0 +1,118 @@
+{
+    "agents": [
+        {
+            "agent_id": "0",
+            "name": "FunctionInterpreter",
+            "system_prompt": "You are FunctionInterpreter. Your goal is to understand the function description and break it down into specific requirements. You will then pass these requirements to the FunctionWriter. Your responsibility is to ensure that the requirements are clear and comprehensive.",
+            "tools": []
+        },
+        {
+            "agent_id": "1",
+            "name": "FunctionWriter",
+            "system_prompt": "You are FunctionWriter. Your goal is to write the initial version of the Python function based on the requirements provided by FunctionInterpreter. Your responsibility is to ensure that the function is correctly implemented according to the requirements.",
+            "tools": []
+        },
+        {
+            "agent_id": "2",
+            "name": "EdgeCaseHandler",
+            "system_prompt": "You are EdgeCaseHandler. Your goal is to identify and handle edge cases and different data types for the Python function written by FunctionWriter. Your responsibility is to ensure that the function can handle various edge cases and data types robustly.",
+            "tools": [
+                "search_engine"
+            ]
+        },
+        {
+            "agent_id": "3",
+            "name": "FunctionTester",
+            "system_prompt": "You are FunctionTester. Your goal is to test the Python function to ensure its robustness. You will write test cases, including edge cases, and run them to verify the function's correctness. Your responsibility is to ensure that the function passes all tests and is reliable.",
+            "tools": [
+                "code_interpreter"
+            ]
+        }
+    ],
+    "states": {
+        "states": [
+            {
+                "state_id": "1",
+                "agent_id": "0",
+                "instruction": "Understand the function description and break it down into specific requirements.",
+                "is_initial": true,
+                "is_final": false,
+                "listener": [
+                    "1"
+                ]
+            },
+            {
+                "state_id": "2",
+                "agent_id": "1",
+                "instruction": "Write the initial version of the Python function based on the requirements.",
+                "is_initial": false,
+                "is_final": false,
+                "listener": [
+                    "0",
+                    "2"
+                ]
+            },
+            {
+                "state_id": "3",
+                "agent_id": "2",
+                "instruction": "Identify and handle edge cases and different data types for the Python function.",
+                "is_initial": false,
+                "is_final": false,
+                "listener": [
+                    "1",
+                    "3"
+                ]
+            },
+            {
+                "state_id": "4",
+                "agent_id": "3",
+                "instruction": "Test the Python function to ensure its robustness.",
+                "is_initial": false,
+                "is_final": false,
+                "listener": [
+                    "2"
+                ]
+            },
+            {
+                "state_id": "5",
+                "agent_id": "3",
+                "instruction": "Use <|submit|> <FILL IN THE COMPLETE Python Function> format to submit the final answer",
+                "is_initial": false,
+                "is_final": true,
+                "listener": []
+            }
+        ],
+        "transitions": [
+            {
+                "from_state": "1",
+                "to_state": "2",
+                "condition": "If the function requirements are clear and comprehensive."
+            },
+            {
+                "from_state": "2",
+                "to_state": "3",
+                "condition": "If the initial version of the Python function is written."
+            },
+            {
+                "from_state": "3",
+                "to_state": "4",
+                "condition": "If edge cases and different data types are handled."
+            },
+            {
+                "from_state": "4",
+                "to_state": "5",
+                "condition": "If the function passes all tests."
+            },
+            {
+                "from_state": "4",
+                "to_state": "2",
+                "condition": "If the function fails the tests and needs to be revised."
+            },
+            {
+                "from_state": "3",
+                "to_state": "1",
+                "condition": "If the edge cases reveal issues with the initial requirements."
+            }
+        ]
+    }
+}

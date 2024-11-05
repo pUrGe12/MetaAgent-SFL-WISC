@@ -22,6 +22,14 @@ from io import StringIO
 import sys
 
 def _execute_code(code: str) -> str:
+    """使用Jupyter notebook客户端执行代码
+
+    Args:
+        code (str): 要执行的Python代码字符串
+
+    Returns:
+        str: 执行结果或错误信息
+    """
     # 创建一个新的 Jupyter 笔记本对象
     nb = nbformat.v4.new_notebook()
     
@@ -42,25 +50,36 @@ def _execute_code(code: str) -> str:
         sys.stdout = stdout
         sys.stderr = stderr
         
-        # 创建并执行笔记本客户端
-        client = NotebookClient(nb)
-        client.execute()
+        # 创建笔记本客户端并执行
+        client = NotebookClient(nb, timeout=DEFAULT_TIMEOUT)
+        client.execute(nb)
         
-        # 获取标准输出和标准错误的内容
-        output = stdout.getvalue()
-        error = stderr.getvalue()
+        # 获取执行结果
+        if len(nb.cells[0].outputs) > 0:
+            # 收集所有输出
+            outputs = []
+            for output in nb.cells[0].outputs:
+                if output.output_type == 'stream':
+                    outputs.append(output.text)
+                elif output.output_type == 'execute_result':
+                    outputs.append(str(output.data.get('text/plain', '')))
+                elif output.output_type == 'error':
+                    return '\n'.join(output.traceback)
+            return '\n'.join(outputs)
         
-        # 如果有标准错误，返回错误信息
-        if error:
-            return error
-        else:
-            return output
+        # 如果没有输出，返回stdout的内容
+        return stdout.getvalue() or "Code executed successfully with no output."
+        
     except CellExecutionError as e:
-        return str(e)
+        return f"Execution error: {str(e)}"
+    except Exception as e:
+        return f"Error: {str(e)}"
     finally:
         # 恢复原始的 stdout 和 stderr
         sys.stdout = original_stdout
         sys.stderr = original_stderr
+
+
 
 
 def get_powershell_command():
@@ -189,3 +208,5 @@ def execute_code(
     else:
         logs = result.stdout
     return logs
+
+

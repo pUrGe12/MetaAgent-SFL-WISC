@@ -10,7 +10,7 @@ import json
 import os
 from LLM import LLM
 #os.environ["OPENAI_API_KEY"]="sk-proj-Qb3arpbATMAXg1GF8iR0T3BlbkFJtoOdAQ2VyiCh7ugfchIE"
-#os.environ["OPENAI_API_KEY"]="sk-proj-Qb3arpbATMAXg1GF8iR0T3BlbkFJtoOdAQ2VyiCh7ugfchIE"
+os.environ["OPENAI_API_KEY"]="sk-proj-Qb3arpbATMAXg1GF8iR0T3BlbkFJtoOdAQ2VyiCh7ugfchIE"
 os.environ["AZURE_OPENAI_API_KEY"] = "d56bd868ff56401595c6e74357c02f04"
 os.environ["AZURE_OPENAI_API_BASE"] = "https://yaolun-west.openai.azure.com/"
 os.environ["OPENAI_API_VERSION"] = "2024-07-01-preview"
@@ -85,6 +85,9 @@ Example Test(For machine learning task):
 <Test>
 Train a SVM model to classify the sentiment of a text as positive or negative. 
 <\Test>
+
+if need example dataset(for machine learning task), here is an example dataset path:
+/Users/a11/Desktop/MetaAgent/MetaAgent/ml_benchmark/04_titanic/split_train.csv
 '''
 
 

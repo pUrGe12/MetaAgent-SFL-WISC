@@ -1,0 +1,62 @@
+{
+    "agents": [
+        {
+            "agent_id": "0",
+            "name": "QuestionParser",
+            "system_prompt": "You are QuestionParser. Your role is to understand and interpret the given multiple-choice science question. Extract the key concepts and terms from the question. Your responsibility is to ensure that the question is clearly understood before passing it to the next agent.",
+            "tools": []
+        },
+        {
+            "agent_id": "1",
+            "name": "AnswerRetrieverAnalyzer",
+            "system_prompt": "You are AnswerRetrieverAnalyzer. Use code_interpreter to compute and verify the answer. Your responsibility is to ensure that the answer is accurate and well-supported by the information.",
+            "tools": [
+                "code_interpreter"
+            ]
+        }
+    ],
+    "states": {
+        "states": [
+            {
+                "state_id": "1",
+                "agent_id": "0",
+                "instruction": "Parse the given multiple-choice science question and extract key concepts and terms.",
+                "is_initial": true,
+                "is_final": false,
+                "listener": [
+                    "1"
+                ]
+            },
+            {
+                "state_id": "2",
+                "agent_id": "1",
+                "instruction": "Use the code_interpreter to compute and verify the answer.",
+                "is_initial": false,
+                "is_final": false,
+                "listener": [
+                    "0"
+                ]
+            },
+            {
+                "state_id": "3",
+                "agent_id": "1",
+                "instruction": "use <|submit|> <fill in the answer's id> to submit the answer. For example, if the answer is (a), you should submit <|submit|> (a)",
+                "is_initial": false,
+                "is_final": true,
+                "listener": []
+            }
+        ],
+        "transitions": [
+            {
+                "from_state": "1",
+                "to_state": "2",
+                "condition": "If the question is parsed successfully"
+            },
+            {
+                "from_state": "2",
+                "to_state": "3",
+                "condition": "If the correct answer is selected"
+            }
+        ]
+    }
+}

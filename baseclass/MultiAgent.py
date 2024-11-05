@@ -1,9 +1,13 @@
 import os
 from openai import OpenAI
 import json
-from LLM import LLM
 import sys
 sys.path.append("..")
+try:
+    from LLM import LLM
+except:
+    from baseclass.LLM import LLM
+
 from tools import TOOL_MAPPING
 
 class MultiAgentSystem:
@@ -52,7 +56,7 @@ class MultiAgentSystem:
         for agent_id, agent in self.agents.items():
             updated_agent = self.update_system_prompt(agent)
             #print("=========check agent==========",agent_id,updated_agent,"\n==========")
-            self.llms[agent_id] = LLM(system_prompt=updated_agent['system_prompt'])
+            self.llms[agent_id] = LLM(system_prompt=updated_agent['system_prompt'], use_azure=True)
 
     def update_system_prompt(self, agent):
         tools_description = ""
@@ -62,7 +66,7 @@ class MultiAgentSystem:
                 if tool == "code_interpreter":
                     tools_description += f"- {tool}: Use it with <execute>```python <Your Code> ```<\\execute>. and you will got the stdout or error message\n WARNING: 1. Thses enironment is not a jupyter notebook. Please use print(df.head()) instead of df.head(), other jupyer outputs  also need print out. 2. Put the code you want to execute in only one snippet!!!  "
                 if tool == "search_engine":
-                    tools_description += '''- {tool}: Use it with <execute>```python 
+                    tools_description += '''- search_engine: Use it with <execute>```python 
                     import json
                     import os
                     import requests
@@ -123,25 +127,29 @@ class MultiAgentSystem:
             instruction = state['instruction']
         self.running_log += f"\n\n\nCurrent instruction: {instruction}\n"
         self.write_log()  # 自动保存日志
-        instruction += "DO NOT FORGET TO ADD <STATE_TRANS>: <fill in id> after complete the task!(Before you get the tool response, you need to make sure the tool is executed successfully)"
-                
+        instruction += "Add <STATE_TRANS>: <fill in id> after complete the task and make sure the tool is executed successfully"
+        if "code_interpreter" in agent['tools']:
+            instruction +="- code_interpreter: Use it with <execute>```python <Your Code> ```<\\execute>. and you will got the stdout or error message\n WARNING: 1. Thses enironment is not a jupyter notebook. Please use print(df.head()) or print(x) instead of direct use df.head() or x, other jupyer outputs  also need print out. 2. Put the code you want to execute in one snippet"
         conversation_count = 0
-        while conversation_count < 5:
+        while conversation_count < 4:
             output = llm.chat(instruction)
-            #print("========INS==============")
-            #print(instruction)
-            #print("======================")
-            #print(agent['name'],":\n",output)
+            print("========INSTRUCTION==============")
+            print(instruction)
+            print("======================")
+            print(agent['name'],":\n",output)
             #if state['is_final']:
             #    return output
             if not output:
                 output = " "
-            if "<|submit|>" in output:
+            if "<|submit|>" in output or state['is_final']:
                 self.running_log += f"\n\n\n<|completed|>\nComplete final state. Task completed, result is:\n {output}\n"
                 self.current_state_id = None  # 测试完成，清空当前状态
                 self.write_current_state()  # 写入当前状态
                 self.write_log()  # 自动保存日志
-                return output
+                try:
+                    return output.split("<|submit|>")[1]
+                except:
+                    return output
             next_state_id = self.get_next_state(state_id, output)
             self.running_log += f"\n\n{output}\n\n"
             #print("=======CheckPoint=======")
@@ -149,7 +157,7 @@ class MultiAgentSystem:
             action = self.extract_action(output)
             if action:
                 result = self.codeinterpreter(action)
-                instruction = f"Action result is :\n {result}\n(notice: If the result for a code is blank, the code is executed successfully without any error), After completed current step task, please use <STATE_TRANS>: <fill in states id>  and pass necessary information to next agent"
+                instruction = f"Action result is :\n {result}\n(notice: If the result for a code is blank, make sure you use print(x) to print the result, notice you can not use direct x to get the result) If the result is synax error, consider use \' instead of  \" , After completed current step task, please use <STATE_TRANS>: <fill in states id>  and pass necessary information to next agent"
                 self.running_log += f"\n\n\nAction result is :\n {result}\n"
                 self.write_log()  # 自动保存日志
                 self.current_state_id = state_id  # 保持当前状态id不变
@@ -176,8 +184,12 @@ class MultiAgentSystem:
                 self.running_log += f"\n\n\nNo next state detected, instruction updated to: {instruction}\n"
                 self.write_log()  # 自动保存日志
             conversation_count += 1
+            # What about Memroy? Any Method to arrange the memory? sometimes too long. 
+            # Maybe we can use the tool to clear the memory?
+            # Or some RAG method?
 
         return output
+    
 
     def extract_info(self, output):
         start_tag = "<INFO>"
@@ -231,10 +243,25 @@ class MultiAgentSystem:
         # 清空之前的日志文件
         self.clear_log()
         
+        # 记录任务开始前的token消耗
+        initial_costs = {agent_id: llm.get_token_cost() for agent_id, llm in self.llms.items()}
+        
         initial_state = [state for state in self.states.values() if state['is_initial']][0]
         self.running_log += f"Task to be solved:\n{user_input}\n"
         self.write_log()  # 自动保存日志
-        return self.run_agent(initial_state['state_id'], user_input, max_transitions)
+        
+        # 运行任务
+        result = self.run_agent(initial_state['state_id'], user_input, max_transitions)
+        
+        # 计算总成本 (任务结束后的成本 - 开始前的成本)
+        total_cost = 0
+        for agent_id, llm in self.llms.items():
+            final_cost = llm.get_token_cost()
+            cost_diff = final_cost - initial_costs[agent_id]
+            total_cost += cost_diff
+        
+        print("----------Total cost:----------", total_cost)
+        return result, total_cost
 
     def load(self, filename):
         with open(filename, 'r') as f:
@@ -256,8 +283,11 @@ class MultiAgentSystem:
     def write_current_state(self):
         state_path = os.path.join('..', 'workspace', 'current_state.json')
         state_data = {'state_id': self.current_state_id}
-        with open(state_path, 'w') as f:
-            json.dump(state_data, f)
+        try:
+            with open(state_path, 'w') as f:
+                json.dump(state_data, f)
+        except Exception as e:
+            print(f'Error writing current state: {e}')
 
     def write_log(self):
         """

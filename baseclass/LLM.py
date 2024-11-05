@@ -4,38 +4,50 @@ import json
 # export AZURE_OPENAI_API_KEY="d56bd868ff56401595c6e74357c02f04"
 # export AZURE_OPENAI_API_BASE="https://yaolun-west.openai.azure.com/"
 # Set the OPENAI_API_KEY and OPENAI_API_BASE in the environment variables
+
 class LLM():
     def __init__(self, system_prompt="You are a helpful assistant", use_azure=True):
         self.use_azure = use_azure
         if self.use_azure:
             self.client = AzureOpenAI(
                 api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-                azure_endpoint=os.getenv("AZURE_OPENAI_API_BASE")
+                azure_endpoint=os.getenv("AZURE_OPENAI_API_BASE"),
+                api_version=os.getenv("API_VERSION")
             )
         else:
             self.client = OpenAI(
                 api_key=os.getenv("OPENAI_API_KEY"),
-                base_url=os.getenv("OPENAI_API_BASE")
+                #base_url=os.getenv("OPENAI_API_BASE")
             )
         self.messages = [{"role": "system", "content": system_prompt}]
         self.system_prompt = system_prompt
         self.token_cost = 0
 
-    def chat(self, message):
+    def chat(self, message, temperature=0.2,model="gpt-4o"):
         self.messages.append({"role": "user", "content": message})
         if self.use_azure:
-            response = self.client.chat.completions.create(
-                model="gpt-4o",
+            try:
+                response = self.client.chat.completions.create(
+                    model="gpt-4o",
                 messages=self.messages,
-                temperature=0
-            )
+                    temperature=temperature
+                )
+            except Exception as e:
+                print(self.messages[-1])
+                print(e)
+                response = self.client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=self.messages,
+                    temperature=temperature
+                )
         else:
             response = self.client.chat.completions.create(
-                model="gpt-4o",
+                model='gpt-3.5-turbo',
                 messages=self.messages,
-                temperature=0
+                temperature=temperature
             )
         rsp = response.choices[0].message.content
+        self.messages.append({"role": "assistant", "content": rsp})
         self.token_cost += response.usage.total_tokens
         return rsp
 

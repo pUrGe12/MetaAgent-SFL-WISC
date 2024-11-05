@@ -10,9 +10,12 @@ import os
 os.environ["AZURE_OPENAI_API_KEY"] = "d56bd868ff56401595c6e74357c02f04"
 os.environ["AZURE_OPENAI_API_BASE"] = "https://yaolun-west.openai.azure.com/"
 os.environ["OPENAI_API_VERSION"] = "2024-07-01-preview"
+#os.environ["OPENAI_API_KEY"]="sk-JN3JpGrAFt82do4UT7I64uD6BFCIs6Yp0NQywaYPdGCyJABk"
+os.environ["OPENAI_API_KEY"]="sk-proj-Qb3arpbATMAXg1GF8iR0T3BlbkFJtoOdAQ2VyiCh7ugfchIE" 
+#os.environ["OPENAI_API_BASE"]="https://api.openai-proxy.org/v1"
 
 
-with open("../mlbench/ml_round2_wotraceback.json", "r") as f:
+with open("/Users/a11/Desktop/MetaAgent/MetaAgent_release/autodesign/test_mas.json", "r") as f:
     mas_dict = json.load(f)
 
 agent_json = mas_dict['agents']

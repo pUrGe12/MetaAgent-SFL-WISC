@@ -86,6 +86,9 @@ def update_mas(origin_task_desc,json_file_path, fail_tasks):
     llm = LLM()
     response = llm.chat(evolution_prompt_formatted)
     print(response)
+    if "<|submit|>" in response:
+        response.replace("<|submit|>","Use <|submit|> <FILL IN THE FINAL ANSWER> format to submit the final answer")
+    
 
     # 使用正则表达式提取JSON部分
     pattern = re.compile(r'```json\n(.*?)\n```', re.DOTALL)
