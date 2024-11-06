@@ -5,6 +5,8 @@
     <title>MetaAgent Demo</title>
     <link rel="stylesheet" href="/static/css/styles.css">
     <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/VincentGarreau/particles.js/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.3/gsap.min.js"></script>
     <style>
         /* Add scrollbar styles */
         #run-log, #test-cases {
@@ -17,17 +19,19 @@
     </style>
 </head>
 <body>
-    <h1>MetaAgent Demo</h1>
+    <div id="particles-js"></div>
+
+    <h1 style="color: #00cccc;">MetaAgent Demo</h1>
 
     <div class="container">
         <!-- Construction Stage -->
         <section>
             <h2>Construction Stage</h2>
             <form id="design-form">
-                <label for="task_description">Enter Task Description</label><br>
-                <textarea id="task_description" name="task_description" rows="4" cols="50" required></textarea><br><br>
+                <label for="task_description">Task Description:</label>
+                <textarea id="task_description" name="task_description" rows="3" placeholder="Enter task description..."></textarea>
                 <button type="submit">Design Multi-Agent System</button>
-                <span class="loading-spinner" id="design-spinner"></span>
+                <span id="design-spinner" class="loading-spinner"></span>
             </form>
             <div id="design-response"></div>
         </section>
@@ -70,32 +74,63 @@
 
         <!-- Running Log -->
         <section>
-            <h2>Running Log</h2>
-            <pre id="run-log"></pre>
+            <h2 id="run-log-header" style="cursor: pointer;">Running Log &#9656;</h2>
+            <div id="run-log-container" style="display: none;">
+                <pre id="run-log"></pre>
+            </div>
         </section>
     </div>
 
     <script src="/static/js/interactive_graph.js"></script>
+    <script src="/static/js/particles_init.js"></script>
 
     <script>
+        // Toggle running log display
+        document.getElementById('run-log-header').addEventListener('click', function() {
+            const container = document.getElementById('run-log-container');
+            const header = document.getElementById('run-log-header');
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                header.innerHTML = 'Running Log &#9662;'; // Arrow pointing down
+                updateLog(); // Load the log when expanded
+                // Start fetching the log every 5 seconds
+                logInterval = setInterval(updateLog, 5000);
+            } else {
+                container.style.display = 'none';
+                header.innerHTML = 'Running Log &#9656;'; // Arrow pointing right
+                // Stop fetching the log when collapsed
+                clearInterval(logInterval);
+            }
+        });
+
+        let logInterval; // Variable to store the interval ID
+
         // Function to fetch and update the log
         function updateLog() {
-            $.getJSON('/get_log', function(data) {
-                if (data.log) {
-                    $('#run-log').text(data.log);
-                    // Auto-scroll to the bottom
-                    var logElement = document.getElementById('run-log');
-                    logElement.scrollTop = logElement.scrollHeight;
-                }
-            });
+            fetch('/get_log')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.log) {
+                        document.getElementById('run-log').textContent = data.log;
+                        // Auto-scroll to the bottom
+                        const logElement = document.getElementById('run-log');
+                        logElement.scrollTop = logElement.scrollHeight;
+                    } else {
+                        document.getElementById('run-log').textContent = 'No logs available.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching log:', error);
+                });
         }
 
-        // Refresh the log every 5 seconds
-        setInterval(updateLog, 5000);
-
-        // Fetch the log immediately after the page loads
-        $(document).ready(function() {
-            updateLog();
+        // Optionally, you can fetch the log immediately after the page loads if the log is visible
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('run-log-container');
+            if (container.style.display !== 'none') {
+                updateLog();
+                logInterval = setInterval(updateLog, 5000);
+            }
         });
 
         // Start real-time log update when the "Start Evolution" button is clicked
@@ -154,5 +189,12 @@
             });
         });
     </script>
+
+    <button id="theme-toggle">Toggle Dark Mode</button>
+
+    <div id="loading-screen" style="display: none;">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
 </body>
 </html>

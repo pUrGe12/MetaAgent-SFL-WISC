@@ -95,9 +95,29 @@ document.addEventListener('DOMContentLoaded', function() {
                       .append("svg")
                       .attr("width", '100%')
                       .attr("height", '100%')
-                      .style("background-color", "#f9f9f9");
+                      .style("background-color", "transparent");
 
-        svg.append('defs').append('marker')
+        const width = document.getElementById('fsm-graph').clientWidth;
+        const height = document.getElementById('fsm-graph').clientHeight;
+
+        // Define glow filter
+        const defs = svg.append("defs");
+
+        const glowFilter = defs.append("filter")
+                               .attr("id", "glow");
+
+        glowFilter.append("feGaussianBlur")
+                  .attr("stdDeviation", "3.5")
+                  .attr("result", "coloredBlur");
+
+        const feMerge = glowFilter.append("feMerge");
+        feMerge.append("feMergeNode")
+               .attr("in", "coloredBlur");
+        feMerge.append("feMergeNode")
+               .attr("in", "SourceGraphic");
+
+        // Arrow markers for links
+        defs.append('marker')
             .attr('id', 'arrow')
             .attr('viewBox', '0 -5 10 10')
             .attr('refX', 15)
@@ -105,9 +125,10 @@ document.addEventListener('DOMContentLoaded', function() {
             .attr('markerWidth', 6)
             .attr('markerHeight', 6)
             .attr('orient', 'auto')
-            .append('path')
+          .append('path')
             .attr('d', 'M0,-5L10,0L0,5')
-            .attr('fill', '#666');
+            .attr('fill', '#0ff')
+            .style('filter', 'url(#glow)');
 
         // 准备节点和链接
         const nodes = data.states.states.map(state => ({
@@ -143,14 +164,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // 设置SVG画布大小
-        const width = document.getElementById('fsm-graph').clientWidth;
-        const height = document.getElementById('fsm-graph').clientHeight;
         svg.attr("width", width).attr("height", height);
 
         // 设置力导向
         const simulation = d3.forceSimulation(nodes)
-                             .force("link", d3.forceLink(links).id(d => d.id).distance(150))
-                             .force("charge", d3.forceManyBody().strength(-500))
+                             .force("link", d3.forceLink(links).id(d => d.id).distance(200))
+                             .force("charge", d3.forceManyBody().strength(-1000))
                              .force("center", d3.forceCenter(width / 2, height / 2));
 
         // 绘制链接
@@ -160,11 +179,20 @@ document.addEventListener('DOMContentLoaded', function() {
                         .data(links)
                         .enter()
                         .append("path")
-                        .attr("stroke-width", 2)
-                        .attr("stroke", "#666")
+                        .attr("class", "link-path")
+                        .attr("stroke", "#0ff")
+                        .attr("stroke-width", "1.5px")
                         .attr("fill", "none")
-                        .attr("marker-end", d => d.source !== d.target ? "url(#arrow)" : "")
-                        .style("cursor", "pointer") // 鼠标悬停时显示为指针
+                        .attr("marker-end", "url(#arrow)")
+                        .style("filter", "url(#glow)")
+                        .on("mouseover", function() {
+                            d3.select(this)
+                              .attr("stroke-width", "3px");
+                        })
+                        .on("mouseout", function() {
+                            d3.select(this)
+                              .attr("stroke-width", "1.5px");
+                        })
                         .on("click", function(event, d) {
                             // 移除现有的对话框
                             d3.selectAll(".info-dialog").remove();
@@ -176,12 +204,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
                             // 对话框背景
                             dialog.append("rect")
-                                  .attr("width", 300)
-                                  .attr("height", 100)
+                                  .attr("width", 250)
+                                  .attr("height", 150)
                                   .attr("rx", 10)
                                   .attr("ry", 10)
-                                  .attr("fill", "rgba(255, 255, 255, 0.95)")
-                                  .attr("stroke", "#666")
+                                  .attr("fill", "rgba(50, 50, 50, 0.95)")
+                                  .attr("stroke", "#fff")
                                   .attr("stroke-width", 1.5);
 
                             // 关闭按钮
@@ -190,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                   .attr("y", 20)
                                   .attr("text-anchor", "end")
                                   .attr("font-size", "16px")
-                                  .attr("fill", "#333")
+                                  .attr("fill", "#fff")
                                   .style("cursor", "pointer")
                                   .text("✖")
                                   .on("click", function() {
@@ -200,19 +228,19 @@ document.addEventListener('DOMContentLoaded', function() {
                             // 信息内容
                             dialog.append("text")
                                   .attr("x", 20)
-                                  .attr("y", 40)
+                                  .attr("y", 30)
                                   .attr("font-size", "14px")
-                                  .attr("fill", "#333")
+                                  .attr("fill", "#fff")
                                   .text(`Transition Condition:`);
 
                             dialog.append("foreignObject")
                                   .attr("x", 20)
-                                  .attr("y", 50)
-                                  .attr("width", 260)
-                                  .attr("height", 40)
+                                  .attr("y", 40)
+                                  .attr("width", 230)
+                                  .attr("height", 30)
                                   .append("xhtml:div")
                                   .style("font-size", "12px")
-                                  .style("color", "#333")
+                                  .style("color", "#fff")
                                   .style("overflow-wrap", "break-word")
                                   .html(d.condition);
                         });
@@ -224,110 +252,116 @@ document.addEventListener('DOMContentLoaded', function() {
                         .data(nodes)
                         .enter()
                         .append("circle")
-                        .attr("id", d => `node-${d.id}`) // 添加ID用于高亮
-                        .attr("r", 40)
-                        .attr("fill", d => d.is_initial ? "rgba(0, 255, 0, 0.8)" : d.is_final ? "rgba(255, 0, 0, 0.8)" : "rgba(0, 0, 255, 0.8)")
-                        .attr("stroke", "#333")
+                        .attr("class", "node-circle")
+                        .attr("r", 30)
+                        .attr("fill", d => {
+                            if (d.is_initial) {
+                                return "#4CAF50"; // Green for initial nodes
+                            } else if (d.is_final) {
+                                return "#F44336"; // Red for final nodes
+                            } else {
+                                return "#2196F3"; // Blue for standard nodes
+                            }
+                        })
+                        .attr("stroke", "#0ff")
                         .attr("stroke-width", 2)
+                        .attr("id", d => `node-${d.id}`)
                         .call(d3.drag()
                             .on("start", dragstarted)
                             .on("drag", dragged)
-                            .on("end", dragended));
+                            .on("end", dragended))
+                        .on("mouseover", function() {
+                            d3.select(this)
+                              .transition()
+                              .duration(200)
+                              .attr("r", 35);
+                        })
+                        .on("mouseout", function() {
+                            d3.select(this)
+                              .transition()
+                              .duration(200)
+                              .attr("r", 30);
+                        })
+                        .on("click", function(event, d) {
+                            // 移除现有的对话框
+                            d3.selectAll(".info-dialog").remove();
 
-        // 添加标签
-        const label = svg.append("g")
-                         .attr("class", "labels")
-                         .selectAll("text")
-                         .data(nodes)
-                         .enter()
-                         .append("text")
-                         .attr("text-anchor", "middle")
-                         .attr("dy", ".35em")
-                         .attr("font-size", "16px")
-                         .attr("fill", "#fff")
-                         .text(d => d.name);
+                            // 获取节点的位置
+                            const [x, y] = [d.x, d.y];
 
-        // 节点点击事件，展示具体信息
-        node.on("click", function(event, d) {
-            // 移除现有的对话框
-            d3.selectAll(".info-dialog").remove();
+                            // 创建对话框
+                            const dialog = svg.append("g")
+                                              .attr("class", "info-dialog")
+                                              .attr("transform", `translate(${x + 50}, ${y - 60})`);
 
-            // 获取节点的位置
-            const [x, y] = [d.x, d.y];
+                            // 对话框背景
+                            dialog.append("rect")
+                                  .attr("width", 250)
+                                  .attr("height", 150)
+                                  .attr("rx", 10)
+                                  .attr("ry", 10)
+                                  .attr("fill", "rgba(50, 50, 50, 0.95)")
+                                  .attr("stroke", "#fff")
+                                  .attr("stroke-width", 1.5);
 
-            // 创建对话框
-            const dialog = svg.append("g")
-                              .attr("class", "info-dialog")
-                              .attr("transform", `translate(${x + 50}, ${y - 60})`);
+                            // 关闭按钮
+                            dialog.append("text")
+                                  .attr("x", 290)
+                                  .attr("y", 20)
+                                  .attr("text-anchor", "end")
+                                  .attr("font-size", "16px")
+                                  .attr("fill", "#fff")
+                                  .style("cursor", "pointer")
+                                  .text("✖")
+                                  .on("click", function() {
+                                      dialog.remove();
+                                  });
 
-            // 对话框背景
-            dialog.append("rect")
-                  .attr("width", 300)
-                  .attr("height", 180)
-                  .attr("rx", 10)
-                  .attr("ry", 10)
-                  .attr("fill", "rgba(255, 255, 255, 0.95)")
-                  .attr("stroke", "#666")
-                  .attr("stroke-width", 1.5);
+                            // 信息内容
+                            dialog.append("text")
+                                  .attr("x", 20)
+                                  .attr("y", 30)
+                                  .attr("font-size", "14px")
+                                  .attr("fill", "#fff")
+                                  .text(`State ID: ${d.id}`);
 
-            // 关闭按钮
-            dialog.append("text")
-                  .attr("x", 290)
-                  .attr("y", 20)
-                  .attr("text-anchor", "end")
-                  .attr("font-size", "16px")
-                  .attr("fill", "#333")
-                  .style("cursor", "pointer")
-                  .text("✖")
-                  .on("click", function() {
-                      dialog.remove();
-                  });
+                            // 假设有一个agentsMap，可以通过agent_id获取agent信息
+                            // 需要在loadFSM之前加载agents数据并创建agentsMap
+                            const agent = data.agents.find(a => a.agent_id === d.agent_id);
 
-            // 信息内容
-            dialog.append("text")
-                  .attr("x", 20)
-                  .attr("y", 40)
-                  .attr("font-size", "14px")
-                  .attr("fill", "#333")
-                  .text(`State ID: ${d.id}`);
+                            dialog.append("text")
+                                  .attr("x", 20)
+                                  .attr("y", 60)
+                                  .attr("font-size", "14px")
+                                  .attr("fill", "#fff")
+                                  .text(`Agent Name: ${agent ? agent.name : '未知'}`);
 
-            // 假设有一个agentsMap，可以通过agent_id获取agent信息
-            // 需要在loadFSM之前加载agents数据并创建agentsMap
-            const agent = data.agents.find(a => a.agent_id === d.agent_id);
+                            dialog.append("text")
+                                  .attr("x", 20)
+                                  .attr("y", 90)
+                                  .attr("font-size", "14px")
+                                  .attr("fill", "#fff")
+                                  .text(`Instruction:`);
 
-            dialog.append("text")
-                  .attr("x", 20)
-                  .attr("y", 70)
-                  .attr("font-size", "14px")
-                  .attr("fill", "#333")
-                  .text(`Agent Name: ${agent ? agent.name : '未知'}`);
+                            dialog.append("foreignObject")
+                                  .attr("x", 20)
+                                  .attr("y", 100)
+                                  .attr("width", 230)
+                                  .attr("height", 40)
+                                  .append("xhtml:div")
+                                  .style("font-size", "12px")
+                                  .style("color", "#fff")
+                                  .style("overflow-wrap", "break-word")
+                                  .html(d.instruction);
 
-            dialog.append("text")
-                  .attr("x", 20)
-                  .attr("y", 100)
-                  .attr("font-size", "14px")
-                  .attr("fill", "#333")
-                  .text(`Instruction:`);
-
-            dialog.append("foreignObject")
-                  .attr("x", 20)
-                  .attr("y", 110)
-                  .attr("width", 260)
-                  .attr("height", 50)
-                  .append("xhtml:div")
-                  .style("font-size", "12px")
-                  .style("color", "#333")
-                  .style("overflow-wrap", "break-word")
-                  .html(d.instruction);
-
-            dialog.append("text")
-                  .attr("x", 20)
-                  .attr("y", 170)
-                  .attr("font-size", "14px")
-                  .attr("fill", "#333")
-                  .text(`Tools: ${agent && agent.tools ? agent.tools.join(', ') : '无'}`)
-                  .attr("dy", "0.35em");
-        });
+                            dialog.append("text")
+                                  .attr("x", 20)
+                                  .attr("y", 150)
+                                  .attr("font-size", "14px")
+                                  .attr("fill", "#fff")
+                                  .text(`Tools: ${agent && agent.tools ? agent.tools.join(', ') : '无'}`)
+                                  .attr("dy", "0.35em");
+                        });
 
         // 更新位置
         simulation.on("tick", () => {
@@ -364,13 +398,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
-            node
-                .attr("cx", d => d.x)
+            node.attr("cx", d => d.x)
                 .attr("cy", d => d.y);
 
-            label
-                .attr("x", d => d.x)
-                .attr("y", d => d.y);
+            // Update labels if implemented
         });
 
         // 拖拽函数
@@ -390,6 +421,44 @@ document.addEventListener('DOMContentLoaded', function() {
             d.fx = null;
             d.fy = null;
         }
+
+        const zoom = d3.zoom()
+            .scaleExtent([0.5, 5])
+            .on('zoom', (event) => {
+                svg.attr('transform', event.transform);
+            });
+
+        svg.call(zoom);
+
+        // Add tooltip div
+        const tooltip = d3.select("body").append("div")
+                      .attr("class", "tooltip")
+                      .style("position", "absolute")
+                      .style("padding", "8px")
+                      .style("background", "rgba(0, 0, 0, 0.8)")
+                      .style("color", "#0ff")
+                      .style("border-radius", "4px")
+                      .style("pointer-events", "none")
+                      .style("opacity", 0);
+
+        // Update node mouse events
+        node.on("mouseover", function(event, d) {
+                d3.select(this)
+                  .transition()
+                  .duration(200)
+                  .attr("r", 35);
+                tooltip.transition().duration(200).style("opacity", 0.9);
+                tooltip.html(`State ID: ${d.id}<br/>Agent: ${d.agent_id}`)
+                       .style("left", (event.pageX + 15) + "px")
+                       .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", function() {
+                d3.select(this)
+                  .transition()
+                  .duration(200)
+                  .attr("r", 30);
+                tooltip.transition().duration(500).style("opacity", 0);
+            });
     }
 
     // 加载运行日志
@@ -499,4 +568,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 testCasesDisplay.innerText = JSON.stringify(data.test_cases, null, 2);
             });
     }
+
+    // Toggle Deploy Section
+    const deployToggleButton = document.getElementById('deploy-toggle-button');
+    const deploySection = document.getElementById('deploy-section');
+
+    deployToggleButton.addEventListener('click', function() {
+        if (deploySection.style.display === 'none' || deploySection.style.display === '') {
+            deploySection.style.display = 'block';
+            deployToggleButton.textContent = 'Hide Test Runner';
+        } else {
+            deploySection.style.display = 'none';
+            deployToggleButton.textContent = 'Run Test';
+        }
+    });
+
+    // Similar toggling for other sections like 'Generate Test Cases' and 'Evolve Multi-Agent System'
 });
