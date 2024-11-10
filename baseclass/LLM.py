@@ -1,9 +1,6 @@
 import os
 from openai import OpenAI, AzureOpenAI
 import json
-# export AZURE_OPENAI_API_KEY="d56bd868ff56401595c6e74357c02f04"
-# export AZURE_OPENAI_API_BASE="https://yaolun-west.openai.azure.com/"
-# Set the OPENAI_API_KEY and OPENAI_API_BASE in the environment variables
 
 class LLM():
     def __init__(self, system_prompt="You are a helpful assistant", use_azure=True):

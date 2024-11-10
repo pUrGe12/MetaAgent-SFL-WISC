@@ -1,8 +1,9 @@
 # MetaAgent: Automatically Building Multi-Agent System based on Finite State Machine
 🌐 **[Website]](https://mercury7353.github.io/MetaAgent-Static-Demo/)**
+🔗 **[Paper](TBD)**
 
 <p align="center">
-  <img src="/static/images/face.png" alt="image" width="250"/>
+  <img src="/images/face.png" alt="image" width="250"/>
 </p>
 
 ## 🎆 News

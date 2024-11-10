@@ -8,10 +8,6 @@ from LLM import LLM
 #from evo_prompts import *
 from prompts import *
 
-# 设置环境变量
-os.environ["AZURE_OPENAI_API_KEY"] = "d56bd868ff56401595c6e74357c02f04"
-os.environ["AZURE_OPENAI_API_BASE"] = "https://yaolun-west.openai.azure.com/"
-os.environ["OPENAI_API_VERSION"] = "2024-07-01-preview"
 evolution_prompt='''
 You are a Multi-Agent System Designer. Your task is to modify the Multi-Agent System based on the existing failed task cases.
 
