@@ -7,8 +7,6 @@ import os
 import random
 from baselines import direct, COT, COT_SC, llm_debate, self_refine, spp
 import traceback
-# 可能代码写的有问题，结果全部一样，都是75.76
-# 而且direct加了random shuffle之后直接提高了10个点，不太正常。  
 os.environ["AZURE_OPENAI_API_KEY"] = "d56bd868ff56401595c6e74357c02f04"
 os.environ["AZURE_OPENAI_API_BASE"] = "https://yaolun-west.openai.azure.com/"
 os.environ["OPENAI_API_VERSION"] = "2024-07-01-preview"
@@ -34,16 +32,19 @@ def create_prompt(question, correct_answer, wrong_answers):
     for idx, answer in enumerate(all_answers):
         prompt += f"{options[idx]} {answer}\n"
     
+    # Add the answer format instruction at the end of the prompt
+    prompt += "\nFollow the answer format: <|submit|> <fill in the answer's label>, for example: <|submit|> (a)"
+    
     return prompt, options[correct_position]
 
 def process_row(row, method_name):
     """处理单个问题并返回是否正确"""
-    question = row['Pre-Revision Question']
-    correct_answer = row['Pre-Revision Correct Answer']
+    question = row['Question']
+    correct_answer = row['Correct Answer']
     wrong_answers = [
-        row['Pre-Revision Incorrect Answer 1'],
-        row['Pre-Revision Incorrect Answer 2'],
-        row['Pre-Revision Incorrect Answer 3']
+        row['Incorrect Answer 1'],
+        row['Incorrect Answer 2'],
+        row['Incorrect Answer 3']
     ]
     
     # 创建随机顺序的提示和正确答案标签
@@ -75,7 +76,16 @@ def process_row(row, method_name):
     print(f"Model response: {model_answer}")
     print("=========================")
     
-    is_correct = correct_label in model_answer
+    # Update the evaluation logic to check for the specific format
+    is_correct = False
+    if "<|submit|>" in model_answer:
+        # Extract the answer label after <|submit|>
+        try:
+            submitted_answer = model_answer.split("<|submit|>")[1].strip()
+            is_correct = correct_label.lower() in submitted_answer.lower()
+        except:
+            is_correct = False
+    
     return is_correct
 
 def evaluate_model(method_name, max_workers=8):
@@ -111,7 +121,8 @@ if __name__ == "__main__":
     max_workers = min(8, os.cpu_count())
     
     # 要测试的所有方法
-    methods = ["spp"]
+    #methods = ["direct"]
+    methods = ["cot_sc", "llm_debate", "self_refine", "spp"]
     #methods = ["direct"]
     # 存储所有结果
     results = {}

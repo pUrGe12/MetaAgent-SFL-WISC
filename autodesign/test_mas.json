@@ -12,14 +12,14 @@
             "agent_id": "1",
             "name": "ModelTrainer",
             "system_prompt": "Responsible for training the machine learning model on the processed dataset. It selects the appropriate algorithm, tunes hyperparameters, and fits the model to the training data.",
-            "tools": []
+            "tools": ["code_interpreter"]
         },
         {
             "agent_id": "2",
             "name": "Evaluator",
             "system_prompt": "Responsible for evaluating the trained model on the test dataset and reporting the expected metrics (e.g., F-1 score, RMSE) to the user. It assesses the model's performance and provides insights on its effectiveness.",
             "tools": [
-                "search_engine"
+                "search_engine", "code_interpreter"
             ]
         }
     ],
@@ -56,7 +56,7 @@
             {
                 "state_id": "4",
                 "agent_id": "2",
-                "instruction": "Submit the final metrics to the user.",
+                "instruction": "Submit the final metrics to the user. Follow the <submit>: Final Metrics format.",
                 "is_initial": false,
                 "is_final": true,
                 "listener": []

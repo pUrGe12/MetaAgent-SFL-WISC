@@ -1,14 +1,15 @@
-# MetaAgent: Building your Multi-Agent System by one line of prompt
+# MetaAgent: Automatically Building Multi-Agent System based on Finite State Machine
+🌐 **[Website]](https://mercury7353.github.io/MetaAgent-Static-Demo/)**
 
 <p align="center">
-  <img src="face.png" alt="image" width="250"/>
+  <img src="/static/images/face.png" alt="image" width="250"/>
 </p>
 
 ## 🎆 News
 - [2024/10/17] Release the first version of MetaAgent.
 
 ## 👀 Overview  
-![image](compare.png)
+![image](/static/images/compare.png)
 MetaAgent is a framework that can be used to build your own multi-agent system  automatically by **one line of prompt**.  
 The Open-Sourced framework 
 

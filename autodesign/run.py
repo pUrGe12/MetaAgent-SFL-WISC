@@ -36,7 +36,7 @@ def main(mas_saving_path, cases_saving_path, task_description):
         log(f"MAS Generation completed. Token Cost: {token_cost}", "success")
         
         # 添加evolution循环
-        max_iterations = 10
+        max_iterations = 2
         for iteration in range(max_iterations):
             log(f"\n=== Evolution Iteration {iteration + 1}/{max_iterations} ===", "info")
             
@@ -74,10 +74,10 @@ def main(mas_saving_path, cases_saving_path, task_description):
             
             log(f"Testing completed. {len(failed_log)} cases failed.", "success")
             
-            # 如果没有失败的测试用例，可以提前结束循环
+            # 即使没有失败的测试用例，也要进行一次evolution优化
             if len(failed_log) == 0:
-                log("All tests passed! Evolution process completed early.", "success")
-                break
+                log("All tests passed! But still doing one more evolution for optimization.", "info")
+                failed_log = [multi_agent.get_running_log()]  # 使用最后一次的运行日志进行优化
                 
             log("=== Step 4: Evolution ===", "info")
             # 更新下一次迭代的MAS文件路径

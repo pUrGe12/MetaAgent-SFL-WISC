@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, jsonify
+from markupsafe import Markup
 import json
 import subprocess
 import os
 import threading
+import markdown
 
 # Import the gen function from FSM_Gen module
 import sys
@@ -15,6 +17,7 @@ from CaseGen import case_gen
 from evolution.general_evolve import update_mas
 from autodesign.evaluate.general_test import run_mas_test
 import traceback
+from web.content.introduction import INTRODUCTION_CONTENT
 
 app = Flask(__name__)
 
@@ -24,7 +27,13 @@ mas_lock = threading.Lock()
 
 # Route: Home page
 @app.route('/')
-def index():
+def home():
+    html_content = markdown.markdown(INTRODUCTION_CONTENT, extensions=['fenced_code', 'tables', 'codehilite'])
+    return render_template('home.html', content=Markup(html_content))
+
+# Route: Demo page
+@app.route('/demo')
+def demo():
     return render_template('index.html')
 
 # Route: Generate MAS
