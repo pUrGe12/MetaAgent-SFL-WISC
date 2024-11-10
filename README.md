@@ -10,7 +10,7 @@
 - [2024/10/17] Release the first version of MetaAgent.
 
 ## 👀 Overview  
-![image](/static/images/compare.png)
+![image](/images/compare.png)
 MetaAgent is a framework that can be used to build your own multi-agent system  automatically by **one line of prompt**.  
 The Open-Sourced framework 
 
