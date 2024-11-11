@@ -4,9 +4,9 @@
 import json
 import os
 import requests
-os.environ['BING_SEARCH_V7_SUBSCRIPTION_KEY']="e5ac2ebcba064af1830740a2a270fb74"
+os.environ['BING_SEARCH_V7_SUBSCRIPTION_KEY']=""
 subscription_key = os.environ['BING_SEARCH_V7_SUBSCRIPTION_KEY']
-endpoint = "https://api.bing.microsoft.com/v7.0/search"
+endpoint = ""
 # Query term(s) to search for.
 query = <"Insert your query here">
 

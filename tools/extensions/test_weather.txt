@@ -1,3 +1,0 @@
-Temperature: 20
-Humidity: 50
-Description: clear sky
