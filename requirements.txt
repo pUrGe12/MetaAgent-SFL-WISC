@@ -8,3 +8,4 @@ wikibase-rest-api-client
 flask
 flask-cors
 flask-socketio
+openai

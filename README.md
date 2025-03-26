@@ -46,7 +46,7 @@ pip install -r requirements.txt
 - In the code base:  
 ```bash
 cd autodesign
-bash run.sh
+bash example.sh
 ```  
 - In the interface:  
 ```bash
