@@ -7,7 +7,7 @@
 </p>
 
 ## 🎆 News
-- [2024/10/17] Release the first version of MetaAgent.
+- [2025/5] Accepted to ICML2025.
 
 ## 👀 Overview  
 ![image](/images/compare.png)
