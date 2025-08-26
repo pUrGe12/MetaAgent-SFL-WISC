@@ -558,8 +558,6 @@ if __name__ == "__main__":
     # Example usage
     if len(sys.argv) > 1:
         fsm_path = sys.argv[1]
-    else:
-        fsm_path = r"C:\zhangyaolun\桌面\ICML\MetaAgent\examples\mlbench\ml_round1.json"
     
     optimized_fsm = optimize_fsm(fsm_path)
     print("Optimization complete.")

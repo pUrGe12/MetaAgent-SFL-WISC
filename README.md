@@ -54,7 +54,7 @@ export SERP_API_KEY=''
 - In the code base:  
 ```bash
 cd autodesign
-bash example.sh
+python building_pipeline.py
 ```  
 
 ```bash
@@ -69,9 +69,9 @@ python app.py
 ```  
 
 ## Customize Your own FSM
-- Use baseclass/FSM_GEN.py to auto-design your FSM
-- Use autodesign/Optimization.py to optimize the FSM
-- Use autodesign/evaluate/general_test.py to test the FSM
+- Use baseclass/FSM_GEN.py to auto-design your FSM  
+- Use autodesign/Optimization.py to optimize the FSM  
+- Use autodesign/evaluate/general_test.py to test the FSM  
 
 ## 🤝 Support  
 
