@@ -7,12 +7,8 @@ import os
 import random
 from baselines import direct, COT, COT_SC, llm_debate, self_refine, spp
 import traceback
-os.environ["AZURE_OPENAI_API_KEY"] = "d56bd868ff56401595c6e74357c02f04"
-os.environ["AZURE_OPENAI_API_BASE"] = "https://yaolun-west.openai.azure.com/"
-os.environ["OPENAI_API_VERSION"] = "2024-07-01-preview"
-#os.environ["OPENAI_API_KEY"]="sk-JN3JpGrAFt82do4UT7I64uD6BFCIs6Yp0NQywaYPdGCyJABk"
-os.environ["OPENAI_API_KEY"]="sk-proj-Qb3arpbATMAXg1GF8iR0T3BlbkFJtoOdAQ2VyiCh7ugfchIE"
-#os.environ["OPENAI_API_BASE"]="https://api.openai-proxy.org/v1"
+
+
 
 def create_prompt(question, correct_answer, wrong_answers):
     """
