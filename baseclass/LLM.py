@@ -8,11 +8,11 @@ class LLM():
         self.use_azure = use_azure
         if self.use_azure:
             self.client = AzureOpenAI(
-                api_key=,
+                api_key=os.getenv("AZURE_OPENAI_API_KEY"),
                 #os.getenv("AZURE_OPENAI_API_KEY"),
-                azure_endpoint=,
+                azure_endpoint=os.getenv("AZURE_OPENAI_API_BASE"),
                 #os.getenv("AZURE_OPENAI_API_BASE"),
-                api_version=
+                api_version=os.getenv("API_VERSION")
                 #os.getenv("API_VERSION")
             )
         else:

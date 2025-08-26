@@ -42,27 +42,40 @@ To set up the environment of MetaAgent, please run the following command:
 pip install -r requirements.txt
 ```
 
+### Setup your API-Keys
+```bash
+export OPENAI_API_KEY='your-openai-api-key'
+export SERP_API_KEY=''
+... (Other API Keys for tools)
+
+```
+
 ### Run
 - In the code base:  
 ```bash
 cd autodesign
 bash example.sh
 ```  
+
+```bash
+cd evaluate
+python general_test.py # test any input on the designed FSM.
+```
+
 - In the interface:  
 ```bash
 cd web
 python app.py
-```
+```  
+
+## Customize Your own FSM
+- Use baseclass/FSM_GEN.py to auto-design your FSM
+- Use autodesign/Optimization.py to optimize the FSM
+- Use autodesign/evaluate/general_test.py to test the FSM
 
 ## 🤝 Support  
-### Discord Join Us  
-Join our [Discord](https://discord.gg/94a6x2f7) to discuss with us.  
+
 ### Contact Us  
 📮 Email: zhangyaolun5@gmail.com  
 
-
-
-
-## 📄 Citation  
-Paper coming soon.
 
